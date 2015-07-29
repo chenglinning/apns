@@ -142,7 +142,7 @@ class APNsConnection(object):
     def __del__(self):
         if self._stream:
             self._stream.close()
-    
+
     def is_alive(self):
         return self._alive
 
@@ -302,7 +302,7 @@ class Frame(object):
         token_item = '\1' + token_length_bin + token_bin
         self.frame_data.extend(token_item)
         item_len += len(token_item)
-        
+
         if isinstance(payload, Payload):
             payload_json = payload.json()
         else:
@@ -330,7 +330,7 @@ class Frame(object):
         priority_item = '\5' + priority_length_bin + priority_bin
         self.frame_data.extend(priority_item)
         item_len += len(priority_item)
-    
+
         self.frame_data[-item_len-4:-item_len] = APNs.packed_uint_big_endian(item_len)
 
     def __str__(self):
@@ -375,7 +375,7 @@ class FeedbackConnection(APNsConnection):
                 self.buff = self.buff[bytes_to_read:]
             else:
                 return
- 
+
 class GatewayConnection(APNsConnection):
     """
     A class that represents a connection to the APNs gateway server
@@ -408,11 +408,11 @@ class GatewayConnection(APNsConnection):
             payload_json = payload
         payload_length_bin = APNs.packed_ushort_big_endian(len(payload_json))
 
-        notification = ('\1' + identifier_bin + expiry + token_length_bin + token_bin
-            + payload_length_bin + payload_json)
+        notification = (b'\1' + identifier_bin + expiry + token_length_bin + token_bin
+                        + payload_length_bin + payload_json)
 
         return notification
-    
+
     def send_notification(self, identifier, expiry, token_hex, payload, callback):
         self.write(self._get_notification(identifier, expiry, token_hex, payload), callback)
 
